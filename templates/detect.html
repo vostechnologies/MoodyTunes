@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Detect{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <h1 class="mt-5">Your Emotion, Your Music!</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 vid-cam-container">
+        <div class="vid-cam-btn text-center ">
+          <button class="btn btn-success px-3 mx-4 my-2" onclick="startDetection()">Start</button>
+          <button class="btn btn-danger px-3 mx-4 my-2" onclick="stopDetection()">Stop</button>
+        </div>
+        <div class="vid-cam-div" id="vid-cam-div">
+          <img id="video-feed" src="" height="400px" width="400px" alt="">
+          <!-- <img src="" height="400px" width="400px" alt="video feed here"> -->
+          <p style="color: #1ed760;" class="text-center last-frame">Last Captured Frame</p>
+
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h4 class="text-center">Recommended Songs</h4>
+        <div class="songs-div">
+          <p>Detected Mood: <strong id="emotion-value"></strong></p>
+          <div id="music-list" style="display: flex; flex-direction: column;">
+            
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+  // Testing purpose keep checking if only video cam is active P.S idk wtf ive done here but it works
+
+
+    // Call fetchMusicRecommendations() to fetch and display music recommendations
+
+
+    var emotion = "";
+
+  // Adding a start stop seems stupid but let it be
+  function startDetection() {
+    // Some redundancy but ig its alright until workaround found
+    console.log(document.getElementById("video-feed").src);
+    if (document.getElementById("video-feed").src === "http://localhost:5000/video_frame") {
+      location.reload();
+      document.getElementById("video-feed").src = "{{ url_for('video_feed') }}";
+    }
+    else {
+      document.getElementById("video-feed").src = "{{ url_for('video_feed') }}";
+      var intervalId = setInterval(function () {
+        $.get('/emotion', function (data) {
+          emotion = data;
+          document.getElementById("emotion-value").innerHTML = data;
+          console.log(data, "Emotion");
+        });
+      }, 500);
+      setTimeout(function () {
+        clearInterval(intervalId);
+      }, 20000);
+      setTimeout(function () {
+        document.getElementById("video-feed").src = "{{ url_for('video_frame') }}";
+        fetchMusicRecommendations();
+      }, 10000);
+    }
+  }
+
+  function stopDetection() {
+    document.getElementById("video-feed").src = "{{ url_for('video_frame') }}";
+    fetchMusicRecommendations();
+  }
+
+      // Function to fetch music recommendations and update the DOM
+      function fetchMusicRecommendations() {
+        $.get('/music_recom', {emotion: emotion}, function(trackData) {
+            const musicListContainer = document.getElementById('music-list');
+
+            // Clear previous track listings
+            musicListContainer.innerHTML = '';
+
+            // Iterate through the track data and create HTML elements for each track
+            trackData.forEach(track => {
+                const trackElement = document.createElement('div');
+                trackElement.classList.add('p-2');
+                trackElement.classList.add('my-2');
+                trackElement.style.display = 'flex';
+                trackElement.style.flexDirection = 'row';
+                trackElement.style.gap = '24px';
+                trackElement.style.backgroundColor = '#171717';
+                trackElement.style.alignItems = 'center';
+                trackElement.style.justifyContent = 'center';
+                trackElement.style.borderRadius = '12px';
+
+                // Create HTML elements for track image and information
+                trackElement.innerHTML = `
+                    <img src="${track.image_url}" height="60px" width="60px" alt="">
+                    <div style="display: flex; flex-direction: row; justify-content: space-between; width: 100%; align-items: center;">
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
+                            <p class="mt-2">${track.name}</p>
+                            <p class="mb-2">${track.duration}</p>
+                            <p class="mb-2">${track.artist}</p>
+                        </div>
+                        <div class="mx-4">
+                            <span class="fa fa-play"></span>
+                        </div>
+                    </div>
+                `;
+
+                // Append the track element to the music list container
+                musicListContainer.appendChild(trackElement);
+            });
+        });
+    }
+</script>
+{% endblock %}

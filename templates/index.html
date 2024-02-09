@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <h1 class="mt-5">Good evening</h1>
+
+  <h6>You seem to be in a happy mood! Here are some songs for you to listen to!!</h6>
+  <div class="container m-3">
+    <div class="row">
+      {% for track in track_data %}
+      <div class="col-lg-3 col-sm-12 p-3 ">
+        <div class="card music-sec" style="width: 16rem; background-color: #171717;">
+          <div class="img-div">
+            <img src="{{ track.image_url }}" class="card-img-top" alt="{{ track.name }}">
+            <div class="play-icon">
+              <span class="fa fa-play"></span>
+            </div>
+          </div>
+          <div class="card-body" style="min-height: 120px;">
+            <h5>Happy Songs</h5>
+            <p class="card-text">{{ track.name }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+<!-- main area -->
