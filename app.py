@@ -70,10 +70,10 @@ def get_user_details():
     json_result = json.loads(result.content)
     return json_result
 
-def get_songs_for_category(category):
+def get_songs_for_category(category, limit):
     url="https://api.spotify.com/v1/search"
     headers = {"Authorization": "Bearer " + get_token()}
-    query = f"?q={category}+songs&type=track&limit=8"
+    query = f"?q={category}+songs&type=track&limit={limit}"
     url = url + query
     result = get(url, headers=headers)
     json_result = json.loads(result.content)
@@ -81,7 +81,7 @@ def get_songs_for_category(category):
 
 @app.route('/')
 def index():
-    response = get_songs_for_category("happy songs")
+    response = get_songs_for_category("happy songs", 8)
     tracks = response["tracks"]["items"]
     track_data = []
     for track in tracks:
@@ -93,6 +93,54 @@ def index():
         }
         track_data.append(track_info)
     return render_template('index.html', track_data=track_data, access_token = get_token())
+
+@app.route('/playlists')
+def playlists():
+    response = get_songs_for_category("happy songs", 4)
+    tracks = response["tracks"]["items"]
+    happy_songs = []
+    for track in tracks:
+        track_info = {
+            'name': track['name'],
+            'image_url': track['album']['images'][0]['url'],
+            'image_height': track['album']['images'][0]['height'],
+            'image_width': track['album']['images'][0]['width'],
+        }
+        happy_songs.append(track_info)
+    response = get_songs_for_category("sad songs", 4)
+    tracks = response["tracks"]["items"]
+    sad_songs = []
+    for track in tracks:
+        track_info = {
+            'name': track['name'],
+            'image_url': track['album']['images'][0]['url'],
+            'image_height': track['album']['images'][0]['height'],
+            'image_width': track['album']['images'][0]['width'],
+        }
+        sad_songs.append(track_info)
+    response = get_songs_for_category("fearful songs", 4)
+    tracks = response["tracks"]["items"]
+    fear_songs = []
+    for track in tracks:
+        track_info = {
+            'name': track['name'],
+            'image_url': track['album']['images'][0]['url'],
+            'image_height': track['album']['images'][0]['height'],
+            'image_width': track['album']['images'][0]['width'],
+        }
+        fear_songs.append(track_info)
+    response = get_songs_for_category("fearful songs", 4)
+    tracks = response["tracks"]["items"]
+    surprised_songs = []
+    for track in tracks:
+        track_info = {
+            'name': track['name'],
+            'image_url': track['album']['images'][0]['url'],
+            'image_height': track['album']['images'][0]['height'],
+            'image_width': track['album']['images'][0]['width'],
+        }
+        surprised_songs.append(track_info)
+    return render_template('playlists.html', happy_songs=happy_songs, surprised_songs=surprised_songs, sad_songs=sad_songs, fear_songs=fear_songs, access_token = get_token())
 
 @app.route('/detect')
 def detect():
