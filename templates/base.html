@@ -17,8 +17,8 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-            <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <form class="d-flex" id="searchForm" action="/search" method="POST">
+              <input class="form-control me-2" type="search" name="searchTerm" placeholder="Search" aria-label="Search">
               <button class="btn btn-outline-success" type="submit">Search</button>
           </form>
           </div>
@@ -33,7 +33,7 @@
                 <a href="{{ url_for('index') }}"><h3><i class="fa fa-home"></i>&nbsp; Home</h3></a>
               </div>
               <div class="row pt-3">
-                <a href="">
+                <a href="{{ url_for('search') }}">
                   <h3><i class="fa fa-search"></i>&nbsp; Search</h3>
                 </a>
 

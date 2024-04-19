@@ -57,3 +57,26 @@ a:hover{
     min-width: 400px; 
     background-color: #171717;
 }
+
+.search-field{
+    padding: 30px;
+    border-radius: 30px;
+    height: 60px;
+    width: 60%;
+    border: 1px solid #1db954;
+}
+
+.search-field:focus{
+    border: 1px solid #1db954;
+
+}
+
+.search-btn{
+    height: 50px;
+    width: 160px;
+    border-radius: 30px;
+    background-color: #1db954;
+    color: black;
+    border: 1px solid #1db954;
+    margin-top: 20px;
+}

@@ -149,6 +149,28 @@ def playlists():
         surprised_songs.append(track_info)
     return render_template('playlists.html', happy_songs=happy_songs, surprised_songs=surprised_songs, sad_songs=sad_songs, fear_songs=fear_songs, access_token = get_token())
 
+@app.route('/search', methods=['POST', 'GET'])
+def search():
+    songs = []
+    search_term = "Search for songs"
+    if request.method == 'POST':
+        search_term = request.form.get('searchTerm')
+        response = get_songs_for_category(f"{search_term} songs", 20)
+        tracks = response["tracks"]["items"]
+        for track in tracks:
+            track_info = {
+                'name': track['name'],
+                'image_url': track['album']['images'][0]['url'],
+                'image_height': track['album']['images'][0]['height'],
+                'image_width': track['album']['images'][0]['width'],
+                'song_url': f"http://open.spotify.com/track/{track['id']}"
+            }
+            songs.append(track_info)
+    return render_template('search.html', songs=songs, search_term=search_term)
+
+
+    
+
 @app.route('/detect')
 def detect():
     return render_template('detect.html')
