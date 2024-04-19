@@ -90,6 +90,7 @@ def index():
             'image_url': track['album']['images'][0]['url'],
             'image_height': track['album']['images'][0]['height'],
             'image_width': track['album']['images'][0]['width'],
+            'song_url': f"http://open.spotify.com/track/{track['id']}"
         }
         track_data.append(track_info)
     return render_template('index.html', track_data=track_data, access_token = get_token())
@@ -105,6 +106,7 @@ def playlists():
             'image_url': track['album']['images'][0]['url'],
             'image_height': track['album']['images'][0]['height'],
             'image_width': track['album']['images'][0]['width'],
+            'song_url': f"http://open.spotify.com/track/{track['id']}"
         }
         happy_songs.append(track_info)
     response = get_songs_for_category("sad songs", 4)
@@ -116,6 +118,7 @@ def playlists():
             'image_url': track['album']['images'][0]['url'],
             'image_height': track['album']['images'][0]['height'],
             'image_width': track['album']['images'][0]['width'],
+            'song_url': f"http://open.spotify.com/track/{track['id']}"
         }
         sad_songs.append(track_info)
     response = get_songs_for_category("fearful songs", 4)
@@ -127,6 +130,8 @@ def playlists():
             'image_url': track['album']['images'][0]['url'],
             'image_height': track['album']['images'][0]['height'],
             'image_width': track['album']['images'][0]['width'],
+            'song_url': f"http://open.spotify.com/track/{track['id']}"
+
         }
         fear_songs.append(track_info)
     response = get_songs_for_category("fearful songs", 4)
@@ -138,6 +143,8 @@ def playlists():
             'image_url': track['album']['images'][0]['url'],
             'image_height': track['album']['images'][0]['height'],
             'image_width': track['album']['images'][0]['width'],
+            'song_url': f"http://open.spotify.com/track/{track['id']}"
+        
         }
         surprised_songs.append(track_info)
     return render_template('playlists.html', happy_songs=happy_songs, surprised_songs=surprised_songs, sad_songs=sad_songs, fear_songs=fear_songs, access_token = get_token())
@@ -161,7 +168,8 @@ def emotion():
 
 @app.route('/music_recom')
 def music_recom():
-    response = get_songs_for_category(request.args.get('emotion'))
+    emotion = request.args.get('emotion')
+    response = get_songs_for_category(f"{emotion} songs that can fix current {emotion} ", 20)
     print("Fetching songs for EMOTION..............", request.args.get('emotion'))
     tracks = response["tracks"]["items"]
     total = response["tracks"]["total"]
@@ -173,6 +181,7 @@ def music_recom():
             'image_height': track['album']['images'][0]['height'],
             'image_width': track['album']['images'][0]['width'],
             'duration': track['duration_ms'],
+            'song_url': f"http://open.spotify.com/track/{track['id']}",
             'artist': track['artists'][0]['name'],
         }
         track_data.append(track_info)
