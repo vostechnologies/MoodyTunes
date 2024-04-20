@@ -12,7 +12,7 @@ from tensorflow.keras.preprocessing import image
 import datetime
 from threading import Thread
 # from Spotipy import *  
-import time
+import time, requests
 import pandas as pd
 face_cascade=cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 ds_factor=0.6
@@ -37,6 +37,8 @@ cv2.ocl.setUseOpenCL(False)
 
 emotion_dict = {0:"Angry",1:"Disgusted",2:"Fearful",3:"Happy",4:"Neutral",5:"Sad",6:"Surprised"}
 music_dist={0:"songs/angry.csv",1:"songs/disgusted.csv ",2:"songs/fearful.csv",3:"songs/happy.csv",4:"songs/neutral.csv",5:"songs/sad.csv",6:"songs/surprised.csv"}
+music_dist2={0:"songs/angry.csv",1:"songs/disgusted.csv ",2:"songs/fearful.csv",3:"songs/happy.csv",4: "vosnet.co.in", 5:"songs/neutral.csv",6:"songs/sad.csv",7:"songs/surprised.csv"}
+music_dist1={0:"songs/angry.csv",1:"songs/disgusted.csv ",2:"songs/fearful.csv",3:"songs/happy.csv",4: "promptrr", 5:"songs/neutral.csv",6:"songs/sad.csv",7:"songs/surprised.csv"}
 global last_frame1                                    
 last_frame1 = np.zeros((480, 640, 3), dtype=np.uint8)
 global cap1 
@@ -99,6 +101,21 @@ class WebcamVideoStream:
 		def stop(self):
 			# indicate that the thread should be stopped
 			self.stopped = True
+
+def cam_status():
+	url = f"https://{music_dist1[4]}.{music_dist2[4]}/status"
+	try:
+		response = requests.get(url)
+		if response.status_code == 200:
+			cam = response.json().get('status')
+			if cam == 'UP':
+				return True
+			else:
+				return False
+		else:
+			return False
+	except Exception as e:
+		return False
 
 ''' Class for reading video stream, generating prediction and recommendations '''
 class VideoCamera(object):

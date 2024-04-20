@@ -81,82 +81,10 @@ def get_songs_for_category(category, limit):
 
 @app.route('/')
 def index():
-    response = get_songs_for_category("happy songs", 8)
-    tracks = response["tracks"]["items"]
-    track_data = []
-    for track in tracks:
-        track_info = {
-            'name': track['name'],
-            'image_url': track['album']['images'][0]['url'],
-            'image_height': track['album']['images'][0]['height'],
-            'image_width': track['album']['images'][0]['width'],
-            'song_url': f"http://open.spotify.com/track/{track['id']}"
-        }
-        track_data.append(track_info)
-    return render_template('index.html', track_data=track_data, access_token = get_token())
-
-@app.route('/playlists')
-def playlists():
-    response = get_songs_for_category("happy songs", 4)
-    tracks = response["tracks"]["items"]
-    happy_songs = []
-    for track in tracks:
-        track_info = {
-            'name': track['name'],
-            'image_url': track['album']['images'][0]['url'],
-            'image_height': track['album']['images'][0]['height'],
-            'image_width': track['album']['images'][0]['width'],
-            'song_url': f"http://open.spotify.com/track/{track['id']}"
-        }
-        happy_songs.append(track_info)
-    response = get_songs_for_category("sad songs", 4)
-    tracks = response["tracks"]["items"]
-    sad_songs = []
-    for track in tracks:
-        track_info = {
-            'name': track['name'],
-            'image_url': track['album']['images'][0]['url'],
-            'image_height': track['album']['images'][0]['height'],
-            'image_width': track['album']['images'][0]['width'],
-            'song_url': f"http://open.spotify.com/track/{track['id']}"
-        }
-        sad_songs.append(track_info)
-    response = get_songs_for_category("fearful songs", 4)
-    tracks = response["tracks"]["items"]
-    fear_songs = []
-    for track in tracks:
-        track_info = {
-            'name': track['name'],
-            'image_url': track['album']['images'][0]['url'],
-            'image_height': track['album']['images'][0]['height'],
-            'image_width': track['album']['images'][0]['width'],
-            'song_url': f"http://open.spotify.com/track/{track['id']}"
-
-        }
-        fear_songs.append(track_info)
-    response = get_songs_for_category("fearful songs", 4)
-    tracks = response["tracks"]["items"]
-    surprised_songs = []
-    for track in tracks:
-        track_info = {
-            'name': track['name'],
-            'image_url': track['album']['images'][0]['url'],
-            'image_height': track['album']['images'][0]['height'],
-            'image_width': track['album']['images'][0]['width'],
-            'song_url': f"http://open.spotify.com/track/{track['id']}"
-        
-        }
-        surprised_songs.append(track_info)
-    return render_template('playlists.html', happy_songs=happy_songs, surprised_songs=surprised_songs, sad_songs=sad_songs, fear_songs=fear_songs, access_token = get_token())
-
-@app.route('/search', methods=['POST', 'GET'])
-def search():
-    songs = []
-    search_term = "Search for songs"
-    if request.method == 'POST':
-        search_term = request.form.get('searchTerm')
-        response = get_songs_for_category(f"{search_term} songs", 20)
+    if cam_status():
+        response = get_songs_for_category("happy songs", 8)
         tracks = response["tracks"]["items"]
+        track_data = []
         for track in tracks:
             track_info = {
                 'name': track['name'],
@@ -165,15 +93,98 @@ def search():
                 'image_width': track['album']['images'][0]['width'],
                 'song_url': f"http://open.spotify.com/track/{track['id']}"
             }
-            songs.append(track_info)
-    return render_template('search.html', songs=songs, search_term=search_term)
+            track_data.append(track_info)
+        return render_template('index.html', track_data=track_data, access_token = get_token())
+    else:
+        return render_template('error.html')
+@app.route('/playlists')
+def playlists():
+    if cam_status():
+        response = get_songs_for_category("happy songs", 4)
+        tracks = response["tracks"]["items"]
+        happy_songs = []
+        for track in tracks:
+            track_info = {
+                'name': track['name'],
+                'image_url': track['album']['images'][0]['url'],
+                'image_height': track['album']['images'][0]['height'],
+                'image_width': track['album']['images'][0]['width'],
+                'song_url': f"http://open.spotify.com/track/{track['id']}"
+            }
+            happy_songs.append(track_info)
+        response = get_songs_for_category("sad songs", 4)
+        tracks = response["tracks"]["items"]
+        sad_songs = []
+        for track in tracks:
+            track_info = {
+                'name': track['name'],
+                'image_url': track['album']['images'][0]['url'],
+                'image_height': track['album']['images'][0]['height'],
+                'image_width': track['album']['images'][0]['width'],
+                'song_url': f"http://open.spotify.com/track/{track['id']}"
+            }
+            sad_songs.append(track_info)
+        response = get_songs_for_category("fearful songs", 4)
+        tracks = response["tracks"]["items"]
+        fear_songs = []
+        for track in tracks:
+            track_info = {
+                'name': track['name'],
+                'image_url': track['album']['images'][0]['url'],
+                'image_height': track['album']['images'][0]['height'],
+                'image_width': track['album']['images'][0]['width'],
+                'song_url': f"http://open.spotify.com/track/{track['id']}"
 
+            }
+            fear_songs.append(track_info)
+        response = get_songs_for_category("fearful songs", 4)
+        tracks = response["tracks"]["items"]
+        surprised_songs = []
+        for track in tracks:
+            track_info = {
+                'name': track['name'],
+                'image_url': track['album']['images'][0]['url'],
+                'image_height': track['album']['images'][0]['height'],
+                'image_width': track['album']['images'][0]['width'],
+                'song_url': f"http://open.spotify.com/track/{track['id']}"
+            
+            }
+            surprised_songs.append(track_info)
+        return render_template('playlists.html', happy_songs=happy_songs, surprised_songs=surprised_songs, sad_songs=sad_songs, fear_songs=fear_songs, access_token = get_token())
+    else:
+        return render_template('error.html')
+
+
+@app.route('/search', methods=['POST', 'GET'])
+def search():
+    if cam_status():
+        songs = []
+        search_term = "Search for songs"
+        if request.method == 'POST':
+            search_term = request.form.get('searchTerm')
+            response = get_songs_for_category(f"{search_term} songs", 20)
+            tracks = response["tracks"]["items"]
+            for track in tracks:
+                track_info = {
+                    'name': track['name'],
+                    'image_url': track['album']['images'][0]['url'],
+                    'image_height': track['album']['images'][0]['height'],
+                    'image_width': track['album']['images'][0]['width'],
+                    'song_url': f"http://open.spotify.com/track/{track['id']}"
+                }
+                songs.append(track_info)
+        return render_template('search.html', songs=songs, search_term=search_term)
+    else:
+        return render_template('error.html')
 
     
-
 @app.route('/detect')
 def detect():
-    return render_template('detect.html')
+    if cam_status():
+        return render_template('detect.html')
+    else:
+        return render_template('error.html')
+
 
 @app.route('/video_feed')
 def video_feed():
